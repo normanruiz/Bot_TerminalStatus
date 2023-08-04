@@ -2,7 +2,8 @@ import xmltodict
 
 
 class Configuracion:
-    def __init__(self):
+    def __init__(self, log):
+        self._log = log
         self._configfile = 'config.xml'
         self._bot = None
         self._conexiones = []
@@ -23,10 +24,14 @@ class Configuracion:
     def conexiones(self, conexiones):
         self._conexiones = conexiones
 
+    @property
+    def log(self):
+        return self._log
+
     def cargar(self):
         try:
-            mensaje = "Cargando configuracion..."
-            print("  " + mensaje)
+            mensaje = f"Cargando configuracion..."
+            self.log.Escribir(mensaje)
             with open(self._configfile, 'r', encoding='utf8') as xmlfile:
                 xmlconfig = xmlfile.read()
                 config = xmltodict.parse(xmlconfig)
@@ -53,18 +58,18 @@ class Configuracion:
             conexiones = [origen, destino]
             self.conexiones = conexiones
 
-            mensaje = "Configuracion cargada exitosamente..."
-            print(" ", mensaje)
-            mensaje = "Subproceso finalizado..."
-            print(" ", mensaje)
+            mensaje = f"Configuracion cargada correctamente..."
+            self.log.Escribir(mensaje)
+            mensaje = f"Subproceso finalizado..."
+            self.log.Escribir(mensaje)
         except Exception as excepcion:
-            mensaje = "ERROR - Cargando configuracion: " + str(excepcion)
-            print(" ", mensaje)
-            mensaje = "WARNING!!! - Subproceso interrumpido..."
-            print(" ", mensaje)
+            mensaje = f"ERROR - Cargando configuracion: {str(excepcion)}"
+            self.log.Escribir(mensaje)
+            mensaje = f"WARNING!!! - Subproceso interrumpido..."
+            self.log.Escribir(mensaje)
         finally:
-            mensaje = " " + "-" * 128
-            print(mensaje)
+            mensaje = f" {'-' * 128}"
+            self.log.Escribir(mensaje, tiempo=False)
 
 
 class Autor:
