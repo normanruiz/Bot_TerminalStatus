@@ -25,42 +25,43 @@ class Bot:
 
     def iniciar(self):
         status_code = 0
+        log = Log()
         try:
-            log = Log()
-            log.Verificar_archivo_log()
+            log.verificar_archivo_log()
             mensaje = f" {'='*128 }"
-            log.Escribir(mensaje, tiempo=False)
+            log.escribir(mensaje, tiempo=False)
             mensaje = f"Iniciando TerminalStatus Bot's..."
-            log.Escribir(mensaje)
+            log.escribir(mensaje)
             mensaje = f" {'~'*128 }"
-            log.Escribir(mensaje, tiempo=False)
+            log.escribir(mensaje, tiempo=False)
             configuracion = Configuracion(log)
             configuracion.cargar()
             self.configuracion = configuracion
             self.estado = self.configuracion.bot.estado
-            if not(self.estado):
+
+            if not self.estado:
                 mensaje = f"Bot apagado por configuracion..."
-                log.Escribir(mensaje)
+                log.escribir(mensaje)
                 return
+
         except Exception as excepcion:
             status_code = 1
             mensaje = f" {'-'*128 }"
-            log.Escribir(mensaje, tiempo=False)
+            log.escribir(mensaje, tiempo=False)
             mensaje = f"ERROR - Ejecucion principal: {str(excepcion)}"
-            log.Escribir(mensaje)
+            log.escribir(mensaje)
         finally:
-            if not (self.estado):
+            if not self.estado:
                 mensaje = f" {'-' * 128}"
-                log.Escribir(mensaje, tiempo=False)
+                log.escribir(mensaje, tiempo=False)
                 mensaje = f"WARNING!!! - Proceso principal interrumpido, no se realizaran mas acciones..."
-                log.Escribir(mensaje)
+                log.escribir(mensaje)
 
             mensaje = f" {'~' * 128}"
-            log.Escribir(mensaje, tiempo=False)
+            log.escribir(mensaje, tiempo=False)
             mensaje = f"Finalizando TerminalStatus Bot's..."
-            log.Escribir(mensaje)
+            log.escribir(mensaje)
             mensaje = f" {'='*128 }"
-            log.Escribir(mensaje, tiempo=False)
+            log.escribir(mensaje, tiempo=False)
             print()
             return status_code
-
