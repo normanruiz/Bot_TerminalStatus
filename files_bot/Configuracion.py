@@ -31,7 +31,7 @@ class Configuracion:
     def cargar(self):
         try:
             mensaje = f"Cargando configuracion..."
-            self.log.Escribir(mensaje)
+            self.log.escribir(mensaje)
             with open(self._configfile, 'r', encoding='utf8') as xmlfile:
                 xmlconfig = xmlfile.read()
                 config = xmltodict.parse(xmlconfig)
@@ -40,12 +40,30 @@ class Configuracion:
             bot = Bot(config["parametros"]["bot"]["nombre"], True if config["parametros"]["bot"]["estado"] == 'True' else False,
                       int(config["parametros"]["bot"]["hilos"]), autor)
             self.bot = bot
-            origen = Conexion(config["parametros"]["conexiones"]["origen"]["driver"],
-                              config["parametros"]["conexiones"]["origen"]["server"],
-                              config["parametros"]["conexiones"]["origen"]["database"],
-                              config["parametros"]["conexiones"]["origen"]["username"],
-                              config["parametros"]["conexiones"]["origen"]["password"],
-                              config["parametros"]["conexiones"]["origen"]["select"], None, None, None)
+            origen_estados = Conexion(config["parametros"]["conexiones"]["origen_estados"]["driver"],
+                              config["parametros"]["conexiones"]["origen_estados"]["server"],
+                              config["parametros"]["conexiones"]["origen_estados"]["database"],
+                              config["parametros"]["conexiones"]["origen_estados"]["username"],
+                              config["parametros"]["conexiones"]["origen_estados"]["password"],
+                              config["parametros"]["conexiones"]["origen_estados"]["consulta_estados"], None, None, None)
+            origen_actividad = Conexion(config["parametros"]["conexiones"]["origen_actividad"]["driver"],
+                              config["parametros"]["conexiones"]["origen_actividad"]["server"],
+                              config["parametros"]["conexiones"]["origen_actividad"]["database"],
+                              config["parametros"]["conexiones"]["origen_actividad"]["username"],
+                              config["parametros"]["conexiones"]["origen_actividad"]["password"],
+                              config["parametros"]["conexiones"]["origen_actividad"]["consulta_actividad"], None, None, None)
+            origen_segmentos = Conexion(config["parametros"]["conexiones"]["origen_segmentos"]["driver"],
+                              config["parametros"]["conexiones"]["origen_segmentos"]["server"],
+                              config["parametros"]["conexiones"]["origen_segmentos"]["database"],
+                              config["parametros"]["conexiones"]["origen_segmentos"]["username"],
+                              config["parametros"]["conexiones"]["origen_segmentos"]["password"],
+                              config["parametros"]["conexiones"]["origen_segmentos"]["consulta_segmentos"], None, None, None)
+            origen_inicializacion = Conexion(config["parametros"]["conexiones"]["origen_inicializacion"]["driver"],
+                              config["parametros"]["conexiones"]["origen_inicializacion"]["server"],
+                              config["parametros"]["conexiones"]["origen_inicializacion"]["database"],
+                              config["parametros"]["conexiones"]["origen_inicializacion"]["username"],
+                              config["parametros"]["conexiones"]["origen_inicializacion"]["password"],
+                              config["parametros"]["conexiones"]["origen_inicializacion"]["consulta_inicializacion"], None, None, None)
             destino = Conexion(config["parametros"]["conexiones"]["destino"]["driver"],
                                config["parametros"]["conexiones"]["destino"]["server"],
                                config["parametros"]["conexiones"]["destino"]["database"],
@@ -55,21 +73,21 @@ class Configuracion:
                                config["parametros"]["conexiones"]["destino"]["insert"],
                                config["parametros"]["conexiones"]["destino"]["update"],
                                config["parametros"]["conexiones"]["destino"]["delete"])
-            conexiones = [origen, destino]
+            conexiones = [origen_estados, origen_actividad, origen_segmentos, origen_inicializacion, destino]
             self.conexiones = conexiones
 
             mensaje = f"Configuracion cargada correctamente..."
-            self.log.Escribir(mensaje)
+            self.log.escribir(mensaje)
             mensaje = f"Subproceso finalizado..."
-            self.log.Escribir(mensaje)
+            self.log.escribir(mensaje)
         except Exception as excepcion:
             mensaje = f"ERROR - Cargando configuracion: {str(excepcion)}"
-            self.log.Escribir(mensaje)
+            self.log.escribir(mensaje)
             mensaje = f"WARNING!!! - Subproceso interrumpido..."
-            self.log.Escribir(mensaje)
+            self.log.escribir(mensaje)
         finally:
             mensaje = f" {'-' * 128}"
-            self.log.Escribir(mensaje, tiempo=False)
+            self.log.escribir(mensaje, tiempo=False)
 
 
 class Autor:

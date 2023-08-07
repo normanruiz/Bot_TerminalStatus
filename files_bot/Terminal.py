@@ -10,6 +10,9 @@ class Terminal:
         self._fecha_cracion = fecha_cracion
         self._fecha_ultima_actualizacion = fecha_ultima_actualizacion
 
+    def __str__(self):
+        return f"Terminal: {self._terminal} [super_estado: {self._super_estado} - sub_estado: {self._sub_estado} - estado: {self._estado} - fecha_ultima_inicializacion_ok: {self._fecha_ultima_inicializacion_ok} - fecha_cracion: {self._fecha_cracion} - fecha_ultima_actualizacion: {self._fecha_ultima_actualizacion}]"
+
     @property
     def terminal(self):
         return self._terminal
