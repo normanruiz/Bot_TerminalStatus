@@ -45,25 +45,25 @@ class Configuracion:
                               config["parametros"]["conexiones"]["origen_estados"]["database"],
                               config["parametros"]["conexiones"]["origen_estados"]["username"],
                               config["parametros"]["conexiones"]["origen_estados"]["password"],
-                              config["parametros"]["conexiones"]["origen_estados"]["consulta_estados"], None, None, None)
+                              config["parametros"]["conexiones"]["origen_estados"]["consulta_estados"], None, None, None, None)
             origen_actividad = Conexion(config["parametros"]["conexiones"]["origen_actividad"]["driver"],
                               config["parametros"]["conexiones"]["origen_actividad"]["server"],
                               config["parametros"]["conexiones"]["origen_actividad"]["database"],
                               config["parametros"]["conexiones"]["origen_actividad"]["username"],
                               config["parametros"]["conexiones"]["origen_actividad"]["password"],
-                              config["parametros"]["conexiones"]["origen_actividad"]["consulta_actividad"], None, None, None)
+                              config["parametros"]["conexiones"]["origen_actividad"]["consulta_actividad"], None, None, None, None)
             origen_segmentos = Conexion(config["parametros"]["conexiones"]["origen_segmentos"]["driver"],
                               config["parametros"]["conexiones"]["origen_segmentos"]["server"],
                               config["parametros"]["conexiones"]["origen_segmentos"]["database"],
                               config["parametros"]["conexiones"]["origen_segmentos"]["username"],
                               config["parametros"]["conexiones"]["origen_segmentos"]["password"],
-                              config["parametros"]["conexiones"]["origen_segmentos"]["consulta_segmentos"], None, None, None)
+                              config["parametros"]["conexiones"]["origen_segmentos"]["consulta_segmentos"], None, None, None, None)
             origen_inicializacion = Conexion(config["parametros"]["conexiones"]["origen_inicializacion"]["driver"],
                               config["parametros"]["conexiones"]["origen_inicializacion"]["server"],
                               config["parametros"]["conexiones"]["origen_inicializacion"]["database"],
                               config["parametros"]["conexiones"]["origen_inicializacion"]["username"],
                               config["parametros"]["conexiones"]["origen_inicializacion"]["password"],
-                              config["parametros"]["conexiones"]["origen_inicializacion"]["consulta_inicializacion"], None, None, None)
+                              config["parametros"]["conexiones"]["origen_inicializacion"]["consulta_inicializacion"], None, None, None, None)
             destino = Conexion(config["parametros"]["conexiones"]["destino"]["driver"],
                                config["parametros"]["conexiones"]["destino"]["server"],
                                config["parametros"]["conexiones"]["destino"]["database"],
@@ -72,7 +72,9 @@ class Configuracion:
                                config["parametros"]["conexiones"]["destino"]["select"],
                                config["parametros"]["conexiones"]["destino"]["insert"],
                                config["parametros"]["conexiones"]["destino"]["update"],
-                               config["parametros"]["conexiones"]["destino"]["delete"])
+                               config["parametros"]["conexiones"]["destino"]["delete"],
+                               config["parametros"]["conexiones"]["destino"]["history"])
+
             conexiones = [origen_estados, origen_actividad, origen_segmentos, origen_inicializacion, destino]
             self.conexiones = conexiones
 
@@ -153,7 +155,7 @@ class Bot:
 
 
 class Conexion:
-    def __init__(self, driver, server, database, username, password, select, insert, update, delete):
+    def __init__(self, driver, server, database, username, password, select, insert, update, delete, history):
         self._driver = driver
         self._server = server
         self._database = database
@@ -163,6 +165,7 @@ class Conexion:
         self._insert = insert
         self._update = update
         self._delete = delete
+        self._history = history
 
     @property
     def driver(self):
@@ -235,3 +238,11 @@ class Conexion:
     @delete.setter
     def delete(self, delete):
         self._delete = delete
+
+    @property
+    def history(self):
+        return self._history
+
+    @history.setter
+    def history(self, history):
+        self._history = history

@@ -46,7 +46,32 @@ class Bot:
                 return
 
             servicio = Servicio(log, self.configuracion)
-            servicio.recolectar_datos_origen()
+
+            self.estado = servicio.recolectar_datos_origen()
+
+            if self.estado:
+                servicio.recolectar_datos_destino()
+
+            if self.estado:
+                servicio.generar_lote_insert()
+
+            if self.estado:
+                servicio.generar_lote_delete()
+
+            if self.estado:
+                servicio.generar_lote_update()
+
+            if self.estado:
+                servicio.impactar_inserts()
+
+            if self.estado:
+                servicio.impactar_deletes()
+
+            if self.estado:
+                servicio.impactar_updates()
+
+            if self.estado:
+                servicio.generar_historial()
 
 
         except Exception as excepcion:

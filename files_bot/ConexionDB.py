@@ -81,7 +81,7 @@ class ConexionDB:
 
         except Exception as excepcion:
             estado = False
-            mensaje = f"ERROR - Ejecutando query :{str(excepcion)}"
+            mensaje = f"ERROR - Ejecutando query: {str(excepcion)}"
             self.log.escribir(mensaje)
         finally:
             if cursor:
@@ -89,3 +89,148 @@ class ConexionDB:
                 mensaje = f"Destruyendo cursor..."
                 self.log.escribir(mensaje)
             return data if estado else estado
+
+    def ejecutar_insert(self, consulta, datos):
+        estado = True
+        cursor = None
+        procesadas = 0
+        try:
+            mensaje = f"Ejecutando insert contra {self.database}..."
+            self.log.escribir(mensaje)
+            mensaje = f"Query: {consulta}"
+            self.log.escribir(mensaje)
+            mensaje = f"Generando cursor..."
+            self.log.escribir(mensaje)
+            conexion = self.conexion
+            cursor = conexion.cursor()
+            mensaje = f"Comenzando escritura de datos..."
+            self.log.escribir(mensaje)
+
+            cursor.fast_executemany = True
+            cursor.executemany(consulta, datos)
+            conexion.commit()
+            procesadas = len(datos)
+
+            mensaje = f"Total de terminales nuevas insertadas: {procesadas}"
+            self.log.escribir(mensaje)
+
+            mensaje = f"Escritura de datos finalizada..."
+            self.log.escribir(mensaje)
+        except Exception as excepcion:
+            estado = False
+            mensaje = f"ERROR - Ejecutando insert: {str(excepcion)}"
+            self.log.escribir(mensaje)
+        finally:
+            if cursor:
+                cursor.close()
+                mensaje = f"Destruyendo cursor..."
+                self.log.escribir(mensaje)
+            return estado
+
+    def ejecutar_delete(self, consulta, datos):
+        estado = True
+        cursor = None
+        procesadas = 0
+        try:
+            mensaje = f"Ejecutando delete contra {self.database}..."
+            self.log.escribir(mensaje)
+            mensaje = f"Query: {consulta}"
+            self.log.escribir(mensaje)
+            mensaje = f"Generando cursor..."
+            self.log.escribir(mensaje)
+            conexion = self.conexion
+            cursor = conexion.cursor()
+            mensaje = f"Comenzando escritura de datos..."
+            self.log.escribir(mensaje)
+
+            for terminal in datos:
+                cursor.execute(consulta, terminal)
+                procesadas += 1
+            conexion.commit()
+
+            mensaje = f"Total de terminales eliminadas: {procesadas}"
+            self.log.escribir(mensaje)
+
+            mensaje = f"Escritura de datos finalizada..."
+            self.log.escribir(mensaje)
+        except Exception as excepcion:
+            estado = False
+            mensaje = f"ERROR - Ejecutando delete: {str(excepcion)}"
+            self.log.escribir(mensaje)
+        finally:
+            if cursor:
+                cursor.close()
+                mensaje = f"Destruyendo cursor..."
+                self.log.escribir(mensaje)
+            return estado
+
+    def ejecutar_update(self, consulta, datos):
+        estado = True
+        cursor = None
+        procesadas = 0
+        try:
+            mensaje = f"Ejecutando update contra {self.database}..."
+            self.log.escribir(mensaje)
+            mensaje = f"Query: {consulta}"
+            self.log.escribir(mensaje)
+            mensaje = f"Generando cursor..."
+            self.log.escribir(mensaje)
+            conexion = self.conexion
+            cursor = conexion.cursor()
+            mensaje = f"Comenzando escritura de datos..."
+            self.log.escribir(mensaje)
+
+            cursor.fast_executemany = True
+            cursor.executemany(consulta, datos)
+            conexion.commit()
+            procesadas = len(datos)
+
+            mensaje = f"Total de terminales actualizadas: {procesadas}"
+            self.log.escribir(mensaje)
+
+            mensaje = f"Escritura de datos finalizada..."
+            self.log.escribir(mensaje)
+        except Exception as excepcion:
+            estado = False
+            mensaje = f"ERROR - Ejecutando update: {str(excepcion)}"
+            self.log.escribir(mensaje)
+        finally:
+            if cursor:
+                cursor.close()
+                mensaje = f"Destruyendo cursor..."
+                self.log.escribir(mensaje)
+            return estado
+
+    def ejecutar_sp(self, name, consulta):
+        estado = True
+        cursor = None
+        try:
+            mensaje = f"Ejecutando procedimiento almacenado {name} contra {self.database}..."
+            self.log.escribir(mensaje)
+            mensaje = f"Query: {consulta}"
+            self.log.escribir(mensaje)
+            mensaje = f"Generando cursor..."
+            self.log.escribir(mensaje)
+            conexion = self.conexion
+            cursor = conexion.cursor()
+            mensaje = f"Comenzando escritura de datos..."
+            self.log.escribir(mensaje)
+
+            cursor.execute(consulta)
+            conexion.commit()
+
+            mensaje = f"Generado historial..."
+            self.log.escribir(mensaje)
+
+            mensaje = f"Escritura de datos finalizada..."
+            self.log.escribir(mensaje)
+        except Exception as excepcion:
+            estado = False
+            mensaje = f"ERROR - Ejecutando procedimiento almacenado {name}: {str(excepcion)}"
+            self.log.escribir(mensaje)
+        finally:
+            if cursor:
+                cursor.close()
+                mensaje = f"Destruyendo cursor..."
+                self.log.escribir(mensaje)
+            return estado
