@@ -34,7 +34,6 @@ class ConexionDB:
             mensaje = f"Conectando a base de datos {database}..."
             self.log.escribir(mensaje)
             cadena_de_conexion = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={usuario};PWD={contrasenia};TrustServerCertificate=yes;"
-            self.log.escribir(cadena_de_conexion)
             self.conexion = pyodbc.connect(cadena_de_conexion)
             mensaje = f"Conexion establecida con base de datos {database}..."
             self.log.escribir(mensaje)

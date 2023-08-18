@@ -36,7 +36,7 @@ class Configuracion:
                 xmlconfig = xmlfile.read()
                 config = xmltodict.parse(xmlconfig)
             autor = Autor(config["parametros"]["bot"]["autor"]["nombre"],
-                          config["parametros"]["bot"]["autor"]["nombre"])
+                          config["parametros"]["bot"]["autor"]["correo"])
             bot = Bot(config["parametros"]["bot"]["nombre"], True if config["parametros"]["bot"]["estado"] == 'True' else False,
                       int(config["parametros"]["bot"]["hilos"]), autor)
             self.bot = bot

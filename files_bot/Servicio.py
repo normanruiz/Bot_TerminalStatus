@@ -127,6 +127,26 @@ class Servicio:
             dataset_origen.clear()
             dataset_procesado.clear()
 
+            datos_conexion = self.configuracion.conexiones[3]
+            conexion = ConexionDB(self.log)
+            conexion.conectar(datos_conexion.driver, datos_conexion.server,
+                              datos_conexion.database, datos_conexion.username,
+                              datos_conexion.password)
+            dataset_origen = conexion.ejecutar_consulta(datos_conexion.select)
+            conexion.desconectar()
+            if len(dataset_origen) == 0:
+                raise Exception('La tabla de origen se encuentra vacia')
+            for registro in dataset_origen:
+                dataset_procesado[registro[0]] = registro[1]
+
+            for numero_terminal, objeto_terminal in dataset.items():
+                if numero_terminal in dataset_procesado:
+                    dataset[numero_terminal].fecha_ultima_inicializacion_ok = dataset_procesado[numero_terminal]
+                else:
+                    dataset[numero_terminal].fecha_ultima_inicializacion_ok = None
+            dataset_origen.clear()
+            dataset_procesado.clear()
+
             self.datos_origen = dataset
 
             mensaje = f"Subproceso finalizado..."
