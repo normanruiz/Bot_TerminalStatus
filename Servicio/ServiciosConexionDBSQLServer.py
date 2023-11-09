@@ -1,15 +1,18 @@
 import pyodbc
 
 
-class ConexionDB:
+class ServiciosConexionDBSQLServer:
     def __init__(self, log):
         self._log = log
         self._conexion = None
-        self._database = None
 
     @property
     def log(self):
         return self._log
+
+    @log.setter
+    def log(self, log):
+        self._log = log
 
     @property
     def conexion(self):
@@ -19,21 +22,18 @@ class ConexionDB:
     def conexion(self, conexion):
         self._conexion = conexion
 
-    @property
-    def database(self):
-        return self._database
-
-    @database.setter
-    def database(self, database):
-        self._database = database
-
     def conectar(self, driver, server, database, usuario, contrasenia):
         estado = True
         self.database = database
         try:
             mensaje = f"Conectando a base de datos {database}..."
             self.log.escribir(mensaje)
-            cadena_de_conexion = f"DRIVER={driver};SERVER={server};DATABASE={database};UID={usuario};PWD={contrasenia};TrustServerCertificate=yes;"
+            cadena_de_conexion = f'DRIVER={driver};' \
+                                 f'SERVER={server};' \
+                                 f'DATABASE={database};' \
+                                 f'UID={usuario};' \
+                                 f'PWD={contrasenia};' \
+                                 f'TrustServerCertificate=yes;'
             self.conexion = pyodbc.connect(cadena_de_conexion)
             mensaje = f"Conexion establecida con base de datos {database}..."
             self.log.escribir(mensaje)
@@ -75,6 +75,8 @@ class ConexionDB:
             self.log.escribir(mensaje)
             cursor.execute(consulta)
             data = cursor.fetchall()
+            mensaje = f"Datos obtenidos: {len(data)} registros..."
+            self.log.escribir(mensaje)
             mensaje = f"Lectura de datos finalizada..."
             self.log.escribir(mensaje)
 
@@ -87,7 +89,7 @@ class ConexionDB:
                 cursor.close()
                 mensaje = f"Destruyendo cursor..."
                 self.log.escribir(mensaje)
-            return data if estado else estado
+            return estado, data
 
     def ejecutar_insert(self, consulta, datos):
         estado = True

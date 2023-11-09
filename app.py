@@ -1,4 +1,4 @@
-from files_bot.Bot import Bot
+from Servicio.ServiciosBot import ServiciosBot
 
-bot = Bot()
-bot.iniciar()
+servicios_bot = ServiciosBot()
+servicios_bot.iniciar()
