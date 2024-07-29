@@ -1,18 +1,15 @@
-import pyodbc
+import mysql.connector
 
 
-class ServiciosConexionDBSQLServer:
+class ServiciosConexionDBMySQL:
     def __init__(self, log):
         self._log = log
         self._conexion = None
+        self._database = None
 
     @property
     def log(self):
         return self._log
-
-    @log.setter
-    def log(self, log):
-        self._log = log
 
     @property
     def conexion(self):
@@ -22,19 +19,22 @@ class ServiciosConexionDBSQLServer:
     def conexion(self, conexion):
         self._conexion = conexion
 
-    def conectar(self, driver, server, database, usuario, contrasenia):
+    @property
+    def database(self):
+        return self._database
+
+    @database.setter
+    def database(self, database):
+        self._database = database
+
+    def conectar(self, host, port, database, usuario, contrasenia):
         estado = True
         self.database = database
         try:
             mensaje = f"Conectando a base de datos {database}..."
             self.log.escribir(mensaje)
-            cadena_de_conexion = f'DRIVER={driver};' \
-                                 f'SERVER={server};' \
-                                 f'DATABASE={database};' \
-                                 f'UID={usuario};' \
-                                 f'PWD={contrasenia};' \
-                                 f'TrustServerCertificate=yes;'
-            self.conexion = pyodbc.connect(cadena_de_conexion)
+            self.conexion = mysql.connector.connect(host=host, port=port, database=database, user=usuario, passwd=contrasenia)
+            self.conexion.get_warnings = True
             mensaje = f"Conexion establecida con base de datos {database}..."
             self.log.escribir(mensaje)
         except Exception as excepcion:
@@ -49,7 +49,9 @@ class ServiciosConexionDBSQLServer:
         try:
             mensaje = f"Cerrando conexion con base de datos {self.database}..."
             self.log.escribir(mensaje)
+
             self.conexion.close()
+
             mensaje = f"Conexion a base de datos {self.database} cerrada..."
             self.log.escribir(mensaje)
         except Exception as excepcion:
@@ -59,7 +61,7 @@ class ServiciosConexionDBSQLServer:
         finally:
             return estado
 
-    def ejecutar_consulta(self, consulta):
+    def ejecutar_select(self, consulta):
         estado = True
         data = []
         cursor = None
@@ -75,11 +77,8 @@ class ServiciosConexionDBSQLServer:
             self.log.escribir(mensaje)
             cursor.execute(consulta)
             data = cursor.fetchall()
-            mensaje = f"Datos obtenidos: {len(data)} registros..."
-            self.log.escribir(mensaje)
             mensaje = f"Lectura de datos finalizada..."
             self.log.escribir(mensaje)
-
         except Exception as excepcion:
             estado = False
             mensaje = f"ERROR - Ejecutando query: {str(excepcion)}"
@@ -89,7 +88,7 @@ class ServiciosConexionDBSQLServer:
                 cursor.close()
                 mensaje = f"Destruyendo cursor..."
                 self.log.escribir(mensaje)
-            return estado, data
+            return (estado, data)
 
     def ejecutar_insert(self, consulta, datos):
         estado = True
@@ -145,8 +144,7 @@ class ServiciosConexionDBSQLServer:
             self.log.escribir(mensaje)
 
             for terminal in datos:
-                self.log.escribir(terminal)
-                cursor.callproc(consulta, [terminal,])
+                cursor.execute(consulta, (terminal,))
                 procesadas += 1
             conexion.commit()
 
@@ -203,12 +201,10 @@ class ServiciosConexionDBSQLServer:
                 self.log.escribir(mensaje)
             return estado
 
-    def ejecutar_sp(self, name, consulta):
+    def ejecutar_sp(self, consulta):
         estado = True
         cursor = None
         try:
-            mensaje = f"Ejecutando procedimiento almacenado {name} contra {self.database}..."
-            self.log.escribir(mensaje)
             mensaje = f"Query: {consulta}"
             self.log.escribir(mensaje)
             mensaje = f"Generando cursor..."
@@ -218,7 +214,7 @@ class ServiciosConexionDBSQLServer:
             mensaje = f"Comenzando escritura de datos..."
             self.log.escribir(mensaje)
 
-            cursor.execute(consulta)
+            cursor.callproc(consulta)
             conexion.commit()
 
             mensaje = f"Generado historial..."
@@ -226,9 +222,10 @@ class ServiciosConexionDBSQLServer:
 
             mensaje = f"Escritura de datos finalizada..."
             self.log.escribir(mensaje)
+
         except Exception as excepcion:
             estado = False
-            mensaje = f"ERROR - Ejecutando procedimiento almacenado {name}: {str(excepcion)}"
+            mensaje = f"ERROR - Ejecutando procedimiento almacenado: {str(excepcion)}"
             self.log.escribir(mensaje)
         finally:
             if cursor:

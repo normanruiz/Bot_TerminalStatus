@@ -1,4 +1,5 @@
 from Servicio.ServiciosConexionDBSQLServer import ServiciosConexionDBSQLServer
+from Servicio.ServiciosConexionDBMySQL import ServiciosConexionDBMySQL
 from Servicio.ServiciosSalesfoce import ServiciosSalesforce
 from Modelo.Terminal import Terminal
 
@@ -144,14 +145,14 @@ class ServiciosETL:
             mensaje = f" {'-' * 128}"
             servicioslog.escribir(mensaje, tiempo=False)
 
-            serviciodestino = ServiciosConexionDBSQLServer(servicioslog)
+            serviciodestino = ServiciosConexionDBMySQL(servicioslog)
             datos_conexion = self.configuracion.conexiones[3]
-            estado = serviciodestino.conectar(datos_conexion.driver, datos_conexion.server,
+            estado = serviciodestino.conectar(datos_conexion.host, datos_conexion.port,
                                               datos_conexion.database, datos_conexion.username,
                                               datos_conexion.password)
             if estado is False:
                 return
-            estado, self.datos_destino = serviciodestino.ejecutar_consulta(datos_conexion.select)
+            estado, self.datos_destino = serviciodestino.ejecutar_select(datos_conexion.select)
             if estado is False:
                 return
             serviciodestino.desconectar()
@@ -264,7 +265,6 @@ class ServiciosETL:
         estado = True
         datos_insert = []
         datos_update = []
-        name = f"[sis].[uspa_history_terminal_status]"
         try:
             mensaje = f"Iniciando carga de datos..."
             servicioslog.escribir(mensaje)
@@ -277,10 +277,10 @@ class ServiciosETL:
                 for numero, terminal in self.terminales_insert.items():
                     datos_insert.append(terminal.to_insert())
                 datos_conexion = self.configuracion.conexiones[3]
-                conexion = ServiciosConexionDBSQLServer(servicioslog)
-                conexion.conectar(datos_conexion.driver, datos_conexion.server,
-                                  datos_conexion.database, datos_conexion.username,
-                                  datos_conexion.password)
+                conexion = ServiciosConexionDBMySQL(servicioslog)
+                conexion.conectar(datos_conexion.host, datos_conexion.port,
+                                              datos_conexion.database, datos_conexion.username,
+                                              datos_conexion.password)
                 conexion.ejecutar_insert(datos_conexion.insert, tuple(datos_insert))
                 conexion.desconectar()
             else:
@@ -293,10 +293,10 @@ class ServiciosETL:
 
             if len(self.terminales_delete) > 0:
                 datos_conexion = self.configuracion.conexiones[3]
-                conexion = ServiciosConexionDBSQLServer(servicioslog)
-                conexion.conectar(datos_conexion.driver, datos_conexion.server,
-                                  datos_conexion.database, datos_conexion.username,
-                                  datos_conexion.password)
+                conexion = ServiciosConexionDBMySQL(servicioslog)
+                conexion.conectar(datos_conexion.host, datos_conexion.port,
+                                              datos_conexion.database, datos_conexion.username,
+                                              datos_conexion.password)
                 conexion.ejecutar_delete(datos_conexion.delete, tuple(self.terminales_delete.keys()))
                 conexion.desconectar()
             else:
@@ -310,10 +310,10 @@ class ServiciosETL:
                 for numero, terminal in self.terminales_update.items():
                     datos_update.append(terminal.to_update())
                 datos_conexion = self.configuracion.conexiones[3]
-                conexion = ServiciosConexionDBSQLServer(servicioslog)
-                conexion.conectar(datos_conexion.driver, datos_conexion.server,
-                                  datos_conexion.database, datos_conexion.username,
-                                  datos_conexion.password)
+                conexion = ServiciosConexionDBMySQL(servicioslog)
+                conexion.conectar(datos_conexion.host, datos_conexion.port,
+                                              datos_conexion.database, datos_conexion.username,
+                                              datos_conexion.password)
                 conexion.ejecutar_update(datos_conexion.update, tuple(datos_update))
                 conexion.desconectar()
             else:
@@ -325,11 +325,11 @@ class ServiciosETL:
             servicioslog.escribir(mensaje)
 
             datos_conexion = self.configuracion.conexiones[3]
-            conexion = ServiciosConexionDBSQLServer(servicioslog)
-            conexion.conectar(datos_conexion.driver, datos_conexion.server,
-                              datos_conexion.database, datos_conexion.username,
-                              datos_conexion.password)
-            conexion.ejecutar_sp(name, datos_conexion.history)
+            conexion = ServiciosConexionDBMySQL(servicioslog)
+            conexion.conectar(datos_conexion.host, datos_conexion.port,
+                                              datos_conexion.database, datos_conexion.username,
+                                              datos_conexion.password)
+            conexion.ejecutar_sp(datos_conexion.history)
             conexion.desconectar()
 
             mensaje = f"Subproceso finalizado..."

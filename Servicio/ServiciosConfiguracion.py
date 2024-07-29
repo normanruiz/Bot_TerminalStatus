@@ -1,6 +1,7 @@
 import xmltodict
 
 from Modelo.ApiSalesforce import ApiSalesforce
+from Modelo.ConexionDBMySQL import ConexionDBMySQL
 from Modelo.Configuracion import Configuracion, Autor, Bot
 from Modelo.ConexionDBSQLServer import ConexionDBSQLServer
 
@@ -56,8 +57,8 @@ class ServiciosConfiguracion:
                                   config["parametros"]["conexiones"]["origen_inicializacion"]["consulta_inicializacion"], None, None, None, None)
                 self.configuracion.conexiones.append(origen_inicializacion)
 
-                destino = ConexionDBSQLServer(config["parametros"]["conexiones"]["destino"]["driver"],
-                                   config["parametros"]["conexiones"]["destino"]["server"],
+                destino = ConexionDBMySQL(config["parametros"]["conexiones"]["destino"]["host"],
+                                   config["parametros"]["conexiones"]["destino"]["port"],
                                    config["parametros"]["conexiones"]["destino"]["database"],
                                    config["parametros"]["conexiones"]["destino"]["username"],
                                    config["parametros"]["conexiones"]["destino"]["password"],
